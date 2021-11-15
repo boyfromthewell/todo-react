@@ -1,6 +1,28 @@
-import React from "react";
+import React, { useRef, useContext } from "react";
+import useInputs from "./hooks/useInputs";
+import { userDispatch } from "./App";
 
-function CreateUser({ username, email, onChange, onCreate, onUpdate }) {
+const CreateUser = () => {
+  const [{ username, email }, onChange, reset] = useInputs({
+    username: "",
+    email: "",
+  });
+  const nexId = useRef(4);
+  const dispatch = useContext(userDispatch);
+
+  const onCreate = () => {
+    dispatch({
+      type: "CREATE_USER",
+      user: {
+        id: nexId.current,
+        username,
+        email,
+      },
+    });
+    reset();
+    nexId.current += 1;
+  };
+
   return (
     <div>
       <input
@@ -16,9 +38,8 @@ function CreateUser({ username, email, onChange, onCreate, onUpdate }) {
         value={email}
       />
       <button onClick={onCreate}>등록</button>
-      <button onClick={onUpdate}>Update</button>
     </div>
   );
-}
+};
 
-export default CreateUser;
+export default React.memo(CreateUser);

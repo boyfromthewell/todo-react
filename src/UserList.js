@@ -1,15 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
+import { userDispatch } from "./App";
 
-function User({ user, onRemove, onToggle, onModify }) {
-  useEffect(() => {
-    console.log("user값이 설정됨");
-    console.log(user);
-    return () => {
-      console.log("user가 바뀌기전..");
-      console.log(user);
-    };
-  }, [user]);
-/*
+const User = React.memo(function User({ user }) {
+  const dispatch = useContext(userDispatch); /*
 useEffect
 첫번째 파라미터 : 함수
 두번째 파라미터: 의존값들어있는 배열(deps)
@@ -33,30 +26,32 @@ deps 파라미터 생략하면, 컴포넌트 리렌더링 될때마다 호출
           cursor: "pointer",
           color: user.active ? "green" : "black",
         }}
-        onClick={() => onToggle(user.id)}
+        onClick={() => {
+          dispatch({ type: "TOGGLE_USER", id: user.id });
+        }}
       >
         {user.username}
       </b>
       <span> ({user.email})</span>
-      <button onClick={() => onRemove(user.id)}>삭제</button>
-      <button onClick={() => onModify(user)}>수정</button>
+      <button
+        onClick={() => {
+          dispatch({ type: "REMOVE_USER", id: user.id });
+        }}
+      >
+        삭제
+      </button>
     </div>
   );
-}
-function UserList({ users, onRemove, onToggle, onModify }) {
+});
+
+function UserList({ users }) {
   return (
     <div>
       {users.map((user) => (
-        <User
-          user={user}
-          key={user.id}
-          onRemove={onRemove}
-          onToggle={onToggle}
-          onModify={onModify}
-        />
+        <User user={user} key={user.id} />
       ))}
     </div>
   );
 }
 
-export default UserList;
+export default React.memo(UserList);
